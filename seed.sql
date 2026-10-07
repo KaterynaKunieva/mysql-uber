@@ -9,6 +9,7 @@ insert ignore into `house` (`id`, `number`, `street_id`) values
     (1, '1a', 1),
     (2, '1b', 1), 
     (3, '1c', 1), 
+    (10, '1d', 1), 
     (4, '2a', 2), 
     (5, '2b', 2), 
     (6, '2c', 2), 

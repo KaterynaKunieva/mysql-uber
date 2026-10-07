@@ -21,7 +21,15 @@ explain
 from `passenger` p
 where `last_name` = 'Коваль';
 
--- STREET WITH THE BIGGEST AMOUNT OF HOUSES
+-- STREET WITH THE BIGGEST AMOUNT OF HOUSES 
+select s.`id`, s.`name`, count(h.`id`) as `house_amount`
+from `street` s
+join `house` h on h.`street_id` = s.`id`
+group by s.`id`, s.`name`
+order by `house_amount` desc
+limit 1;
+
+-- ALL STREETS WITH THE BIGGEST AMOUNT OF HOUSES
 select s.`id`, s.`name`, count(h.`id`) as `house_amount`
 from `street` s
 join `house` h on h.`street_id` = s.`id`
