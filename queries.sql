@@ -20,3 +20,24 @@ explain
 	select id, concat(p.first_name, ' ', p.last_name) as 'passenger_name'
 from `passenger` p
 where `last_name` = 'Коваль';
+
+-- STREET WITH THE BIGGEST AMOUNT OF HOUSES 
+select s.`id`, s.`name`, count(h.`id`) as `house_amount`
+from `street` s
+join `house` h on h.`street_id` = s.`id`
+group by s.`id`, s.`name`
+order by `house_amount` desc
+limit 1;
+
+-- ALL STREETS WITH THE BIGGEST AMOUNT OF HOUSES
+select s.`id`, s.`name`, count(h.`id`) as `house_amount`
+from `street` s
+join `house` h on h.`street_id` = s.`id`
+group by s.`id`, s.`name`
+having `house_amount` = (
+    select count(`id`)
+    from `house`
+    group by `street_id`
+    order by count(`id`) desc
+    limit 1
+);
