@@ -273,3 +273,15 @@ alter table `trip`
         foreign key (`destination_house_id`) references `house` (`id`)
             on delete restrict on update cascade;
 -- end migrate house to street_segment
+
+-- start migrate drivable from street to street_segment
+alter table `street_segment`
+    add column `drivable` boolean not null default true;
+
+update `street_segment` sg
+    join `street` s on sg.`street_id` = s.`id`
+set sg.`drivable` = s.`drivable`;
+
+alter table `street`
+    drop column `drivable`;
+-- end migrate drivable from street to street_segment

@@ -3,8 +3,7 @@ use `uber`;
 select concat(s.`name`, ', ', h.`number`) as 'available_adresses'
 from `house` h
          join `street_segment` ss on h.`street_segment_id` = ss.`id`
-         join `street` s on ss.`street_id` = s.`id`
-where s.`drivable` = true;
+         join `street` s on ss.`street_id` = s.`id`;
 
 select s.`id`, s.`name` as 'street', count(h.`id`) as 'houses'
 from `house` h
