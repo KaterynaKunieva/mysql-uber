@@ -213,6 +213,7 @@ create table if not exists `street_segment`
     `street_segment_type`   enum ('normal', 'bridge') not null default 'normal',
     `intersection_id_start` int unsigned              not null,
     `intersection_id_end`   int unsigned              not null,
+    `distance_km`           decimal(5, 2)             not null default 0.00,
 
     constraint `fk_street_id`
         foreign key (`street_id`) references `street` (`id`)

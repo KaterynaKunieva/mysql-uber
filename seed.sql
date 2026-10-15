@@ -8,27 +8,25 @@ insert ignore into `street` (`id`, `name`, `drivable`) values
     (4, 'київська', true);
 
 -- 2. Intersections (nodes representing city intersections on Left and Right banks)
--- Left bank: 1, 2, 3. Right bank: 4, 5, 6, 7.
 insert ignore into `intersection` (`id`) values 
     (1), (2), (3), (4), (5), (6), (7);
 
--- 3. Street Segments (edges connecting intersections)
--- street_segment_type: 'normal', 'bridge'
-insert ignore into `street_segment` (`id`, `street_id`, `street_segment_type`, `intersection_id_start`, `intersection_id_end`) values
+-- 3. Street Segments (edges connecting intersections with distance_km)
+insert ignore into `street_segment` (`id`, `street_id`, `street_segment_type`, `intersection_id_start`, `intersection_id_end`, `distance_km`) values
     -- Left bank segments
-    (1, 1, 'normal', 1, 2),
-    (2, 1, 'normal', 2, 3),
-    (3, 3, 'normal', 1, 3),
+    (1, 1, 'normal', 1, 2, 1.50),
+    (2, 1, 'normal', 2, 3, 2.00),
+    (3, 3, 'normal', 1, 3, 3.20),
     
-    -- Bridges crossing the river (multiple options between banks)
-    (10, 1, 'bridge', 2, 4), -- Bridge 1 (connecting Left node 2 to Right node 4)
-    (11, 2, 'bridge', 3, 6), -- Bridge 2 (connecting Left node 3 to Right node 6)
+    -- Bridges crossing the river (with different lengths to test route optimization/choice)
+    (10, 1, 'bridge', 2, 4, 1.20), -- Bridge 1 (shorter)
+    (11, 2, 'bridge', 3, 6, 2.80), -- Bridge 2 (longer)
     
     -- Right bank segments
-    (4, 2, 'normal', 4, 5),
-    (5, 2, 'normal', 5, 6),
-    (6, 4, 'normal', 6, 7),
-    (7, 4, 'normal', 4, 7);
+    (4, 2, 'normal', 4, 5, 1.10),
+    (5, 2, 'normal', 5, 6, 1.80),
+    (6, 4, 'normal', 6, 7, 2.50),
+    (7, 4, 'normal', 4, 7, 3.00);
 
 -- 4. Houses (linked to street segments)
 insert ignore into `house` (`id`, `number`, `street_segment_id`) values
