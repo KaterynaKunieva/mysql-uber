@@ -46,3 +46,49 @@ having `house_amount` = (select count(h_sub.`id`)
                          group by ss_sub.`street_id`
                          order by count(h_sub.`id`) desc
                          limit 1);
+
+-- ROUTE WITH BRIDGES
+set @start_id = 1;
+set @finish_id = 7;
+set @require_bridge = true;
+set @recursion_depth = 100;
+
+with recursive route_cte as (
+    -- initial case
+    select @start_id                                       as current_intersection,
+           cast(0.00 as decimal(6, 2))                     as total_distance_km,
+           cast(concat(',', @start_id, ',') as char(1000)) as visited_intersections,
+           cast('' as char(3000))                          as route_details,
+           0                                               as recursion_depth,
+           0                                               as has_bridge
+
+    union all
+
+    -- recursive case
+    select ns.next_intersection                                            as current_intersection,
+           r.total_distance_km + ns.distance_km                            as total_distance_km,
+           concat(r.visited_intersections, ns.next_intersection, ',')      as visited_intersections,
+           concat(r.route_details,
+                  if(r.route_details = '', '', ' -> '),
+                  '(', r.current_intersection, ',', ns.next_intersection, ')_', ns.street_segment_type, '_',
+                  ns.distance_km, 'km')                                    as path_details,
+           r.recursion_depth + 1                                           as recursion_depth,
+           if(r.has_bridge = 1 or ns.street_segment_type = 'bridge', 1, 0) as has_bridge
+    from route_cte r
+             -- select all next segments that start from current_intersection
+             cross join lateral (select ss.*,
+                                        if(ss.intersection_id_start = r.current_intersection, ss.intersection_id_end,
+                                           ss.intersection_id_start) as next_intersection
+                                 from street_segment ss
+                                 where ss.drivable = true
+                                   and (ss.intersection_id_start = r.current_intersection or
+                                        ss.intersection_id_end = r.current_intersection)) ns
+    where r.current_intersection <> @finish_id
+      and locate(concat(',', ns.next_intersection, ','), r.visited_intersections) = 0
+      and r.recursion_depth < @recursion_depth)
+
+select total_distance_km, route_details
+from route_cte
+where current_intersection = @finish_id
+  and (not @require_bridge or has_bridge = 1)
+order by total_distance_km;
